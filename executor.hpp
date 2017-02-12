@@ -55,12 +55,9 @@ namespace CommandExecutor {
 	} StackMember;
 
 	struct Executor {
-		API static Executor *instance();
-		API static Executor *start();
-
 		API Executor(int start_size = 10, int realloc_size = 10);
 
-		API void push(Command *cmd, long delay = 0);
+		API void push(Command *cmd, long delay = 0, bool locking = true);
 		API void push_unsafe(Command *cmd);
 
 		API void pop(Command *cmd);

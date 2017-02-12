@@ -72,12 +72,12 @@ Executor::Executor(int start_size, int realloc_size) : mtx() {
 	op_stack_size = realloc_size;
 }
 
-void Executor::push(Command *cmd, long delay) {
+void Executor::push(Command *cmd, long delay, bool locking) {
 	if (cmd == NULL) return;
-	mtx.lock();
+	if (locking) mtx.lock();
 	StackMember member = { true, OP_PUSH, cmd, current_time_millis(), delay };
 	op_stack[create_stack_index(cmd, &op_stack, &op_stack_size)] = member;
-	mtx.unlock();
+	if (locking) mtx.unlock();
 }
 
 void Executor::push_unsafe(Command *cmd) {
@@ -110,7 +110,7 @@ void Executor::pop_unsafe(Command *cmd) {
 			if (cmd->next_delay() == 0L)
 				push_unsafe(cmd->next());
 			else
-				push(cmd->next(), cmd->next_delay());
+				push(cmd->next(), cmd->next_delay(), false);
 		}
 
 		delete cmd;
